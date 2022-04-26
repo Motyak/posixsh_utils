@@ -1,33 +1,33 @@
 #!/bin/sh
 
-slurp_file_to_str() {
-    file=$1
-    { grep -Pzq '.*\n\z' "$file" && 
-        touch /tmp/POSIX_FRIENDLY_FILE; } ||
-        rm /tmp/POSIX_FRIENDLY_FILE 2> /dev/null
-    str=$(cat "$file")
+slurp_file() {
+    _filename=$1
+    { grep -Pzq '.*\n\z' "$_filename" && 
+        POSIX_FRIENDLY_FILE=true; } ||
+        POSIX_FRIENDLY_FILE=false
+    file=$(cat "$_filename")
 }
 
-print_str() {
-    [ -f /tmp/POSIX_FRIENDLY_FILE ] &&
-        echo "$str\n\c" ||
-        echo "$str\c"
+print_file() {
+    { [ $POSIX_FRIENDLY_FILE = true ] &&
+        echo "$file\n\c"; } ||
+        echo "$file\c"
 }
 
 printf "example with file1:
 '''"
-slurp_file_to_str file1
-print_str
+slurp_file file1
+print_file
 echo "'''"
 
 printf "example with file2:
 '''"
-slurp_file_to_str file2
-print_str
+slurp_file file2
+print_file
 echo "'''"
 
 printf "example with file3:
 '''"
-slurp_file_to_str file3
-print_str
+slurp_file file3
+print_file
 echo "'''"
